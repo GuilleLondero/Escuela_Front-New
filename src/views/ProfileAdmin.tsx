@@ -1,99 +1,17 @@
-import { useState, useEffect } from "react";
 import { Card, Form, Button, Alert } from "react-bootstrap";
-
-type UserDetail = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  type: string;
-};
-
-type User = {
-  username: string;
-  userdetail: UserDetail;
-};
+import { useProfileForm } from "../hooks/useProfileForm";
 
 const ProfileAdmin = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [form, setForm] = useState<UserDetail>({
-    first_name: "",
-    last_name: "",
-    email: "",
-    type: "",
-  });
-  const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [original, setOriginal] = useState<UserDetail | null>(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      if (parsed.userdetail) {
-        setUser(parsed);
-        setForm(parsed.userdetail);
-        setOriginal(parsed.userdetail); // Guardamos para comparar cambios
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-
-    try {
-      const payload = {
-        ...form,
-        ...(newPassword && { new_password: newPassword }),
-      };
-
-      const response = await fetch("http://localhost:8000/users/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("✅ Perfil actualizado correctamente.");
-        if (user) {
-          const updatedUser = {
-            ...user,
-            userdetail: { ...form },
-          };
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-          setOriginal(form); // actualizamos datos base
-        }
-        setNewPassword("");
-      } else {
-        setMessage(data.message || "❌ Error al actualizar.");
-      }
-    } catch {
-      setMessage("❌ Error de red o servidor.");
-    }
-  };
-
-  const hayCambios =
-    original &&
-    (form.first_name !== original.first_name ||
-      form.last_name !== original.last_name ||
-      form.email !== original.email ||
-      newPassword !== "");
+  const {
+    user,
+    form,
+    newPassword,
+    message,
+    hasChanges,
+    handleChange,
+    handlePasswordChange,
+    handleSubmit,
+  } = useProfileForm();
 
   if (!user) return <p className="text-danger">Cargando usuario...</p>;
 
@@ -103,10 +21,9 @@ const ProfileAdmin = () => {
         <Card.Body>
           <Card.Title className="fs-4 fw-bold mb-3">Perfil del Administrador</Card.Title>
 
-          {/* 🧱 Espacio reservado para alertas (evita saltos visuales) */}
           <div style={{ minHeight: "55px" }}>
             {message && (
-              <Alert variant={message.includes("✅") ? "success" : "danger"}>
+              <Alert variant={message.includes("�o.") ? "success" : "danger"}>
                 {message}
               </Alert>
             )}
@@ -164,12 +81,12 @@ const ProfileAdmin = () => {
             <hr />
 
             <Form.Group className="mb-3">
-              <Form.Label>Nueva contraseña</Form.Label>
+              <Form.Label>Nueva contrase��a</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Dejar vacío si no se desea cambiar"
+                placeholder="Dejar vac��o si no se desea cambiar"
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => handlePasswordChange(e.target.value)}
               />
             </Form.Group>
 
@@ -177,7 +94,7 @@ const ProfileAdmin = () => {
               type="submit"
               variant="primary"
               className="w-100"
-              disabled={!hayCambios}
+              disabled={!hasChanges}
             >
               Guardar Cambios
             </Button>
