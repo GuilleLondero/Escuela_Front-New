@@ -1,7 +1,8 @@
 import { useLoginForm } from "../hooks/useLoginForm";
 
 function Login() {
-  const { handleLogin, message, userInputRef, passInputRef } = useLoginForm();
+  const { handleLogin, message, userInputRef, passInputRef, isSubmitting } =
+    useLoginForm();
 
   return (
     <div
@@ -44,16 +45,24 @@ function Login() {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary">
-            Enviar
+          <button
+            type="submit"
+            className="btn btn-primary w-100 d-flex align-items-center justify-content-center"
+            disabled={isSubmitting}
+          >
+            {isSubmitting && (
+              <span
+                className="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              />
+            )}
+            {isSubmitting ? "Iniciando..." : "Ingresar"}
           </button>
 
-          <div className="mt-3 text-center">
-            <span>?No tenes una cuenta? </span>
-            <a href="/registro">Crea una aqui</a>
-          </div>
 
-          <span className="ms-3 text-danger">{message}</span>
+
+          <span className="d-block mt-3 text-center text-danger">{message}</span>
         </form>
       </div>
     </div>

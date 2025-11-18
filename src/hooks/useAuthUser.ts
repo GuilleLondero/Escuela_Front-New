@@ -26,7 +26,16 @@ export function useAuthUser() {
   const token = localStorage.getItem("token");
   const storedUser = parseStoredUser(localStorage.getItem("user"));
   const rawType = storedUser?.type ?? storedUser?.userdetail?.type ?? null;
-  const userType = typeof rawType === "string" ? rawType : null;
+
+  const mapType = (value: unknown) => {
+    if (typeof value !== "string") return null;
+    const normalized = value.toLowerCase();
+    if (normalized === "administrativo" || normalized === "admin") return "admin";
+    if (normalized === "alumno") return "alumno";
+    return normalized;
+  };
+
+  const userType = mapType(rawType);
 
   return {
     token,

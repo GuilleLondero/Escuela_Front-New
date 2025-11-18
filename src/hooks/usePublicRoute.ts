@@ -16,9 +16,8 @@ export function usePublicRoute(): PublicRouteDecision {
   }
 
   if (userType === "admin") {
-    return { redirectTo: "/mi-perfil" };
+    return { redirectTo: "/admin" };
   }
 
   return { redirectTo: "/login" };
 }
-

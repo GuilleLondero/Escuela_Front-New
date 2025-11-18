@@ -27,6 +27,8 @@ export function useAdminCarreras() {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [alumnoSeleccionado, setAlumnoSeleccionado] = useState<number | null>(null);
   const [carreraSeleccionada, setCarreraSeleccionada] = useState<number | null>(null);
+  const [savingCareer, setSavingCareer] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -62,6 +64,7 @@ export function useAdminCarreras() {
 
   const handleGuardar = async () => {
     if (!nombreCarrera.trim()) return;
+    if (savingCareer) return;
 
     const url = editandoId ? `${BASE_URL}/careers/${editandoId}` : `${BASE_URL}/career/add`;
     const method = editandoId ? "PUT" : "POST";
@@ -70,6 +73,7 @@ export function useAdminCarreras() {
     );
 
     try {
+      setSavingCareer(true);
       const res = await fetch(url, {
         method,
         headers: {
@@ -91,6 +95,7 @@ export function useAdminCarreras() {
       setMensaje("ERROR: Problema de red al guardar carrera.");
     } finally {
       setTimeout(() => setMensaje(null), 3000);
+      setSavingCareer(false);
     }
   };
 
@@ -124,8 +129,10 @@ export function useAdminCarreras() {
     const id_career = carreraSeleccionada ?? 0;
 
     if (!id_user || !id_career) return;
+    if (enrolling) return;
 
     try {
+      setEnrolling(true);
       const res = await fetch(`${BASE_URL}/user/addcareer`, {
         method: "POST",
         headers: {
@@ -139,6 +146,8 @@ export function useAdminCarreras() {
       setTimeout(() => setMensaje(null), 4000);
     } catch {
       setMensaje("ERROR: No se pudo inscribir al alumno.");
+    } finally {
+      setEnrolling(false);
     }
   };
 
@@ -176,6 +185,7 @@ export function useAdminCarreras() {
     handleEditar,
     handleEliminar,
     handleInscribir,
+    savingCareer,
+    enrolling,
   };
 }
-

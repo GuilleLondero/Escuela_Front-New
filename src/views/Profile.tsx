@@ -11,15 +11,22 @@ const Profile = () => {
     handleChange,
     handlePasswordChange,
     handleSubmit,
+    isSubmitting,
   } = useProfileForm({ includeDni: true });
 
   if (!user) return <p className="text-danger">Cargando usuario...</p>;
 
   return (
     <div className="container mt-5">
-      <Card className="shadow-sm border-0 rounded-2 p-3 bg-white text-dark mx-auto" style={{ maxWidth: "600px" }}>
-        <Card.Body>
-          <Card.Title className="fs-4 fw-bold mb-3">Mi Perfil</Card.Title>
+      <Card
+        className="shadow-sm border-0 bg-white text-dark mx-auto"
+        style={{ maxWidth: "600px" }}
+      >
+        <Card.Header className="accent">
+          <h5 className="mb-0 text-white">Mi Perfil</h5>
+          <small className="text-white-50">Actualiza tus datos personales y credenciales.</small>
+        </Card.Header>
+        <Card.Body className="p-4">
 
           {message && (
             <Alert variant={message.includes("�o.") ? "success" : "danger"}>
@@ -105,8 +112,20 @@ const Profile = () => {
               />
             </Form.Group>
 
-            <Button type="submit" variant="primary" className="w-100" disabled={!hasChanges}>
-              Guardar Cambios
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-100 d-flex justify-content-center align-items-center"
+              disabled={!hasChanges || isSubmitting}
+            >
+              {isSubmitting && (
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                />
+              )}
+              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </Form>
         </Card.Body>

@@ -48,6 +48,8 @@ export function useAdminPagos() {
   const [carreras, setCarreras] = useState<Carrera[]>([]);
   const [pagoEditando, setPagoEditando] = useState<Pago | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [savingPago, setSavingPago] = useState(false);
+  const [updatingPago, setUpdatingPago] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -127,6 +129,7 @@ export function useAdminPagos() {
 
   const handleAgregarPago = async () => {
     if (!nuevoPago) return;
+    if (savingPago) return;
     const amount = Number(nuevoPago.amount);
     if (!nuevoPago.amount || amount <= 0 || isNaN(amount)) {
       setMensaje(" El monto debe ser mayor a 0");
@@ -137,6 +140,7 @@ export function useAdminPagos() {
       return;
     }
     try {
+      setSavingPago(true);
       const res = await fetch(`${BASE_URL}/payment/add`, {
         method: "POST",
         headers: {
@@ -157,6 +161,9 @@ export function useAdminPagos() {
     } catch {
       setMensaje(" Error de red al agregar pago.");
     }
+    finally {
+      setSavingPago(false);
+    }
   };
 
   const handleEditarPago = (pago: Pago) => {
@@ -172,7 +179,9 @@ export function useAdminPagos() {
 
   const handleConfirmarEdicion = async () => {
     if (!pagoEditando || !nuevoPago) return;
+    if (updatingPago) return;
     try {
+      setUpdatingPago(true);
       const res = await fetch(`${BASE_URL}/payments/${pagoEditando.id}`, {
         method: "PUT",
         headers: {
@@ -192,6 +201,8 @@ export function useAdminPagos() {
       }
     } catch {
       setMensaje(" Error de red al actualizar");
+    } finally {
+      setUpdatingPago(false);
     }
   };
 
@@ -266,5 +277,8 @@ export function useAdminPagos() {
     handleEliminarPago,
     handleConfirmarEdicion,
     tieneEdicion,
+    savingPago,
+    updatingPago,
+    pagoEditando,
   };
 }

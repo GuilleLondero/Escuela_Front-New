@@ -5,8 +5,8 @@ type ProtectedRouteDecision = {
   replace?: boolean;
 };
 
-const alumnoRoutes = ["/dashboard", "/profile", "/myPayments"];
-const legacyRoutes = ["/dashboard", "/profile", "/notifications"];
+const alumnoRoutes = ["/dashboard", "/profile", "/myPayments", "/dashboard/pagos"];
+const legacyRoutes = ["/dashboard", "/profile", "/notifications", "/dashboard/pagos"];
 
 export function useProtectedRoute(pathname: string): ProtectedRouteDecision {
   const { token, userType } = useAuthUser();

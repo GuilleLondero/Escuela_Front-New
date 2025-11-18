@@ -14,6 +14,7 @@ export function useAdminNotifications() {
   const [mensajeStatus, setMensajeStatus] = useState<string | null>(null);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const token = localStorage.getItem("token");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchNotificaciones = async () => {
     try {
@@ -35,11 +36,13 @@ export function useAdminNotifications() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!mensaje.trim()) return;
+    if (isSubmitting) return;
 
     const url = editandoId ? `${BASE_URL}/notifications/${editandoId}` : `${BASE_URL}/notifications`;
     const method = editandoId ? "PUT" : "POST";
 
     try {
+      setIsSubmitting(true);
       const res = await fetch(url, {
         method,
         headers: {
@@ -61,6 +64,7 @@ export function useAdminNotifications() {
       setMensajeStatus("ERROR: Problema de red.");
     } finally {
       setTimeout(() => setMensajeStatus(null), 3000);
+      setIsSubmitting(false);
     }
   };
 
@@ -97,6 +101,6 @@ export function useAdminNotifications() {
     handleSubmit,
     handleEditar,
     handleEliminar,
+    isSubmitting,
   };
 }
-

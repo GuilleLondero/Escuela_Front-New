@@ -1,0 +1,60 @@
+:root {
+  --app-primary: #2f5dff;
+  --app-primary-dark: #2446bf;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f5f7fb;
+  color: #1f2937;
+}
+
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.card-header.accent {
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.btn-primary {
+  background-color: var(--app-primary);
+  border-color: var(--app-primary);
+}
+
+.btn-primary:focus,
+.btn-primary:hover {
+  background-color: var(--app-primary-dark);
+  border-color: var(--app-primary-dark);
+}
+
+.badge-soft {
+  background-color: rgba(47, 93, 255, 0.12);
+  color: var(--app-primary-dark);
+  border: 1px solid rgba(47, 93, 255, 0.2);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.table-responsive {
+  border-radius: 1rem;
+}
+
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #f0f2f8;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}

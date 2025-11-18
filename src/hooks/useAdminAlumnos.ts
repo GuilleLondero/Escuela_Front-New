@@ -48,6 +48,9 @@ export function useAdminAlumnos() {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [carreras, setCarreras] = useState<Carrera[]>([]);
   const [nuevo, setNuevo] = useState<NuevoAlumno>(INITIAL_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const token = localStorage.getItem("token");
 
@@ -58,6 +61,7 @@ export function useAdminAlumnos() {
       });
       const data = await res.json();
       setAlumnos(data);
+      setPage(1);
     } catch (error) {
       console.error("Error al obtener alumnos", error);
     }
@@ -91,6 +95,8 @@ export function useAdminAlumnos() {
   };
 
   const handleCrearAlumno = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const body = {
         username: nuevo.username,
@@ -143,6 +149,7 @@ export function useAdminAlumnos() {
       setMensaje("ERROR: Problema de red al crear alumno.");
     } finally {
       setTimeout(() => setMensaje(null), 3000);
+      setIsSubmitting(false);
     }
   };
 
@@ -155,14 +162,34 @@ export function useAdminAlumnos() {
     [carreras]
   );
 
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(alumnos.length / pageSize)),
+    [alumnos.length, pageSize]
+  );
+
+  const alumnosPaginados = useMemo(
+    () => alumnos.slice((page - 1) * pageSize, page * pageSize),
+    [alumnos, page, pageSize]
+  );
+
+  const nextPage = () => setPage((prev) => Math.min(prev + 1, totalPages));
+  const prevPage = () => setPage((prev) => Math.max(prev - 1, 1));
+  const goToPage = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
+
   return {
     alumnos,
+    alumnosPaginados,
     mensaje,
     nuevo,
     carreraOptions,
     handleChange,
     handleCarreraSelect,
     handleCrearAlumno,
+    isSubmitting,
+    page,
+    totalPages,
+    nextPage,
+    prevPage,
+    goToPage,
   };
 }
-

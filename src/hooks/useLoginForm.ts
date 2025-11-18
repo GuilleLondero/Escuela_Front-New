@@ -25,6 +25,7 @@ export function useLoginForm() {
   const [message, setMessage] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const handleChangeNewPassword = (value: string) => setNewPassword(value);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function loginProcess(dataObject: LoginProcessResponse) {
     if (dataObject.status === "success") {
@@ -56,6 +57,8 @@ export function useLoginForm() {
 
   function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     const username = userInputRef.current?.value ?? "";
     const password = passInputRef.current?.value ?? "";
@@ -74,7 +77,8 @@ export function useLoginForm() {
     fetch(LOGIN_URL, requestOptions)
       .then((respond) => respond.json())
       .then((dataObject) => loginProcess(dataObject))
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.log("error", error))
+      .finally(() => setIsSubmitting(false));
   }
 
   useEffect(() => {
@@ -87,5 +91,6 @@ export function useLoginForm() {
     userInputRef,
     passInputRef,
     handleChangeNewPassword,
+    isSubmitting,
   };
 }

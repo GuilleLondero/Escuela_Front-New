@@ -30,6 +30,7 @@ export function useProfileForm(options?: UseProfileFormOptions) {
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [original, setOriginal] = useState<ProfileFormState | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -58,6 +59,8 @@ export function useProfileForm(options?: UseProfileFormOptions) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     const token = localStorage.getItem("token");
 
     try {
@@ -89,10 +92,12 @@ export function useProfileForm(options?: UseProfileFormOptions) {
           setNewPassword("");
         }
       } else {
-        setMessage(data.message || "�?O Error al actualizar.");
+        setMessage(data.message || " Error al actualizar.");
       }
     } catch {
-      setMessage("�?O Error de red o servidor.");
+      setMessage(" Error de red o servidor.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -120,6 +125,6 @@ export function useProfileForm(options?: UseProfileFormOptions) {
     handleChange,
     handlePasswordChange,
     handleSubmit,
+    isSubmitting,
   };
 }
-
